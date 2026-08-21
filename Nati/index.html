@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>¡Feliz Cumpleaños!</title>
+    <!-- Importando fuentes retro de Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Abril+Fatface&family=DM+Sans:wght@400;700&family=Shrikhand&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --rojo-retro: #fa4a4a;
+            --crema-fondo: #f5f0e6;
+            --texto-oscuro: #2b2b2b;
+            --blanco: #ffffff;
+            --curva-rebote: cubic-bezier(0.34, 1.56, 0.64, 1);
+            --curva-dramatica: cubic-bezier(0.7, 0, 0.3, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--crema-fondo);
+            color: var(--texto-oscuro);
+            font-family: 'DM Sans', sans-serif;
+            height: 100dvh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            perspective: 1200px;
+        }
+
+        /* =========================================
+           1. PANTALLA INTRODUCCIÓN Y EXPLOSIÓN
+           ========================================= */
+        #intro-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100dvh;
+            background-color: var(--rojo-retro);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease;
+        }
+
+        .instruction-heart {
+            color: #FFE5E5;
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 40px;
+            text-align: center;
+            animation: pulse-heart 1.5s infinite ease-in-out;
+            font-family: 'DM Sans', sans-serif;
+        }
+
+        @keyframes pulse-heart {
+            0%, 100% { opacity: 0.7; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.06); }
+        }
+
+        .heart-btn {
+            width: 140px;
+            height: 140px;
+            cursor: pointer;
+            touch-action: none;
+            filter: drop-shadow(0 10px 20px rgba(0,0,0,0.2));
+            transition: transform 0.1s ease;
+        }
+
+        /* ANIMACIÓN DE EXPLOSIÓN AL LLENAR EL CORAZÓN */
+        .heart-btn.burst {
+            animation: heartBurst 0.9s var(--curva-dramatica) forwards !important;
+        }
+
+        @keyframes heartBurst {
+            0% { transform: scale(1); }
+            30% { transform: scale(0.85); }
+            60% { transform: scale(2.2); opacity: 1; }
+            100% { transform: scale(35); opacity: 0; }
+        }
+
+        #intro-screen.fade-out {
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s ease 0.4s;
+        }
+
+        /* =========================================
+           ESTRUCTURA DE CONTENEDOR Y PANTALLAS
+           ========================================= */
+        #app-container {
+            width: 100%;
+            max-width: 430px;
+            height: 100%;
+            position: relative;
+            background-color: var(--crema-fondo);
+            box-shadow: 0 0 40px rgba(0,0,0,0.15);
+            overflow: hidden;
+            z-index: 1;
+            perspective: 1000px;
+        }
+
+        #app-container.app-appear {
+            animation: appZoomIn 0.8s var(--curva-rebote) forwards;
+        }
+
+        @keyframes appZoomIn {
+            0% { transform: scale(0.7); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        #app-container::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.3;
+            pointer-events: none;
+            z-index: 100;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+
+        .fondo-romantico {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            opacity: 0.7;
+            background-image: url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M25 15c-3-4-9-4-12 0-3 3-3 8 0 12l12 12 12-12c3-4 3-9 0-12-3-4-9-4-12 0z' fill='%23fa4a4a' fill-opacity='0.12'/%3E%3Ccircle cx='60' cy='60' r='2' fill='%23fa4a4a' fill-opacity='0.12'/%3E%3Ccircle cx='70' cy='20' r='3' fill='%23fa4a4a' fill-opacity='0.12'/%3E%3Cpath d='M50 45c-1.5-2-4.5-2-6 0-1.5 1.5-1.5 4 0 6l6 6 6-6c1.5-2 1.5-4.5 0-6-1.5-2-4.5-2-6 0z' fill='%23fa4a4a' fill-opacity='0.12'/%3E%3C/svg%3E");
+            animation: float-bg 30s linear infinite;
+        }
+
+        @keyframes float-bg {
+            from { background-position: 0 0; }
+            to { background-position: 80px 80px; }
+        }
+
+        /* =========================================
+           2. TRANSICIONES NOTORIAS ENTRE PANTALLAS
+           ========================================= */
+        .screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            padding: 30px 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            opacity: 0;
+            pointer-events: none;
+            z-index: 1;
+            overflow-y: auto;
+        }
+
+        .screen.active {
+            opacity: 1;
+            pointer-events: auto;
+            z-index: 2;
+            transform: translateX(0) rotate(0deg) scale(1);
+        }
+
+        /* ANIMACIÓN DE SALIDA (SLIDE + ROTATE) */
+        .screen.exit-left {
+            animation: screenExit 0.55s var(--curva-dramatica) forwards;
+            pointer-events: none;
+            z-index: 3;
+        }
+
+        /* ANIMACIÓN DE ENTRADA (SLIDE + BOUNCE) */
+        .screen.enter-right {
+            animation: screenEnter 0.65s var(--curva-rebote) forwards;
+            pointer-events: none;
+            z-index: 4;
+        }
+
+        @keyframes screenExit {
+            0% { transform: translateX(0) rotate(0deg) scale(1); opacity: 1; }
+            100% { transform: translateX(-120%) rotate(-12deg) scale(0.8); opacity: 0; }
+        }
+
+        @keyframes screenEnter {
+            0% { transform: translateX(120%) rotate(12deg) scale(0.85); opacity: 0; }
+            100% { transform: translateX(0) rotate(0deg) scale(1); opacity: 1; }
+        }
+
+        /* =========================================
+           ANIMACIONES INTERACTIVAS DE COMPONENTES
+           ========================================= */
+        .screen.active h1 { animation: popIn 0.6s var(--curva-rebote) 0.1s both; }
+        .screen.active h2 { animation: popIn 0.6s var(--curva-rebote) 0.15s both; }
+        .screen.active p { animation: fadeInUp 0.5s ease 0.25s both; }
+        .screen.active .instruccion { animation: bounceBadge 0.7s var(--curva-rebote) 0.3s both; }
+        .screen.active .memory-grid,
+        .screen.active .word-grid,
+        .screen.active .trivia-options { animation: scaleUp 0.6s var(--curva-rebote) 0.35s both; }
+        .screen.active .prize-card { animation: prizeUnfold 0.8s var(--curva-rebote) 0.25s both; }
+        .screen.active button { animation: popIn 0.6s var(--curva-rebote) 0.45s both; }
+
+        @keyframes popIn {
+            0% { transform: scale(0.4) translateY(30px); opacity: 0; }
+            100% { transform: scale(1) translateY(0); opacity: 1; }
+        }
+
+        @keyframes fadeInUp {
+            0% { transform: translateY(20px); opacity: 0; }
+            100% { transform: translateY(0); opacity: 1; }
+        }
+
+        @keyframes scaleUp {
+            0% { transform: scale(0.85); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        @keyframes bounceBadge {
+            0% { transform: scale(0.3) rotate(-10deg); opacity: 0; }
+            70% { transform: scale(1.1) rotate(3deg); }
+            100% { transform: scale(1) rotate(0deg); opacity: 1; }
+        }
+
+        @keyframes prizeUnfold {
+            0% { transform: scale(0.6) rotateY(90deg); opacity: 0; }
+            100% { transform: scale(1) rotateY(0deg); opacity: 1; }
+        }
+
+        /* TIPOGRAFÍAS Y ELEMENTOS */
+        h1 {
+            font-family: 'Shrikhand', cursive;
+            font-size: 3.5rem;
+            color: var(--rojo-retro);
+            line-height: 1.1;
+            margin: 0 0 10px 0;
+            text-shadow: 3px 3px 0px rgba(0, 0, 0, 0.15);
+        }
+
+        h2 {
+            font-family: 'Abril Fatface', serif;
+            font-size: 1.8rem;
+            color: var(--rojo-retro);
+            letter-spacing: 1px;
+            margin: 0 0 15px 0;
+            text-transform: uppercase;
+            text-shadow: 2px 2px 0px rgba(0, 0, 0, 0.1);
+        }
+
+        h3 {
+            font-family: 'Abril Fatface', serif;
+            font-size: 1.4rem;
+            margin: 0 0 10px 0;
+            color: var(--texto-oscuro);
+        }
+
+        p {
+            font-size: 1.1rem;
+            line-height: 1.5;
+            margin: 0 0 25px 0;
+        }
+
+        .instruccion {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 12px 18px;
+            border-radius: 12px;
+            font-weight: bold;
+            color: var(--rojo-retro);
+            border: 2px dashed var(--rojo-retro);
+            box-shadow: 0 6px 15px rgba(250, 74, 74, 0.12);
+        }
+
+        button {
+            background-color: var(--rojo-retro);
+            color: var(--crema-fondo);
+            border: none;
+            padding: 15px 35px;
+            font-size: 1.2rem;
+            font-family: 'Abril Fatface', serif;
+            letter-spacing: 1px;
+            border-radius: 30px;
+            cursor: pointer;
+            box-shadow: 0 6px 0 #c22922;
+            transition: transform 0.15s var(--curva-rebote), box-shadow 0.15s ease;
+            text-transform: uppercase;
+        }
+
+        button:active {
+            transform: translateY(6px) scale(0.96);
+            box-shadow: 0 0 0 #c22922;
+        }
+
+        .show-unlock {
+            animation: popIn 0.6s var(--curva-rebote) forwards !important;
+        }
+
+        /* JUEGOS */
+        .memory-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+            width: 100%;
+            max-width: 300px;
+        }
+
+        .memory-card {
+            aspect-ratio: 1;
+            perspective: 1000px;
+            cursor: pointer;
+        }
+
+        .memory-card-inner {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transition: transform 0.5s var(--curva-dramatica);
+            transform-style: preserve-3d;
+        }
+
+        .memory-card.flipped .memory-card-inner {
+            transform: rotateY(180deg);
+        }
+
+        .memory-card-front, .memory-card-back {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            backface-visibility: hidden;
+            border-radius: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2rem;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.08);
+            border: 3px solid var(--rojo-retro);
+        }
+
+        .memory-card-front {
+            background-color: var(--rojo-retro);
+            color: var(--crema-fondo);
+            background-image: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255,255,255,0.1) 10px, rgba(255,255,255,0.1) 20px);
+        }
+
+        .memory-card-back {
+            background-color: var(--blanco);
+            transform: rotateY(180deg);
+            overflow: hidden;
+        }
+
+        .memory-card-back img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .word-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+            margin-bottom: 25px;
+            width: 100%;
+            max-width: 320px;
+        }
+
+        .letter-btn {
+            background: var(--blanco);
+            color: var(--texto-oscuro);
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            aspect-ratio: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: none;
+            padding: 0;
+            font-family: 'DM Sans', sans-serif;
+            transition: transform 0.2s var(--curva-rebote), background-color 0.2s;
+        }
+
+        .letter-btn.selected {
+            background: var(--rojo-retro);
+            color: var(--blanco);
+            border-color: var(--rojo-retro);
+            transform: scale(1.15) rotate(4deg);
+            box-shadow: 0 4px 12px rgba(250, 74, 74, 0.4);
+        }
+
+        .trivia-options {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            width: 100%;
+        }
+
+        .trivia-btn {
+            background: var(--blanco);
+            color: var(--texto-oscuro);
+            border: 2px solid var(--texto-oscuro);
+            box-shadow: 4px 4px 0 var(--texto-oscuro);
+            padding: 15px;
+            font-family: 'DM Sans', sans-serif;
+            font-weight: bold;
+            font-size: 1.1rem;
+            border-radius: 10px;
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        .trivia-btn:active {
+            transform: translate(4px, 4px);
+            box-shadow: 0 0 0 var(--texto-oscuro);
+        }
+
+        .trivia-btn.wrong {
+            background: #ffcccc;
+            border-color: red;
+            color: red;
+            animation: shake 0.4s ease;
+        }
+
+        .trivia-btn.correct {
+            background: #d4edda;
+            border-color: #28a745;
+            color: #155724;
+            transform: scale(1.03);
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-6px); }
+            40%, 80% { transform: translateX(6px); }
+        }
+
+        /* TARJETA DE PREMIO */
+        .prize-card {
+            background: var(--blanco);
+            border: 4px solid var(--rojo-retro);
+            padding: 30px 20px;
+            border-radius: 20px;
+            box-shadow: 10px 10px 0 rgba(250, 74, 74, 0.2);
+            margin-bottom: 30px;
+            width: 90%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .prize-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                45deg,
+                transparent 35%,
+                rgba(255, 255, 255, 0.7) 50%,
+                transparent 65%
+            );
+            transform: rotate(30deg) translateY(-100%);
+            animation: shineCard 3.5s infinite ease-in-out;
+        }
+
+        @keyframes shineCard {
+            0%, 65% { transform: rotate(30deg) translateY(-100%); }
+            100% { transform: rotate(30deg) translateY(100%); }
+        }
+
+        .prize-icon {
+            font-size: 4rem;
+            margin-bottom: 10px;
+            animation: floatIcon 2.5s ease-in-out infinite alternate;
+        }
+
+        @keyframes floatIcon {
+            from { transform: translateY(0) scale(1); }
+            to { transform: translateY(-10px) scale(1.08); }
+        }
+
+        #confetti {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 99;
+        }
+        
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+    <!-- PANTALLA DE INTRODUCCIÓN -->
+    <div id="intro-screen">
+        <p class="instruction-heart">Tengo este corazon lleno de sorpresas para ti, mantenlo presionado y estallara de amor</p>
+        
+        <div class="heart-btn" id="heart-btn">
+            <svg viewBox="0 0 24 24" width="100%" height="100%">
+                <defs>
+                    <clipPath id="heart-clip">
+                        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                    </clipPath>
+                </defs>
+                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="rgba(255, 255, 255, 0.2)" stroke="white" stroke-width="0.5"/>
+                <rect id="heart-fill" x="0" y="24" width="24" height="24" fill="white" clip-path="url(#heart-clip)"/>
+            </svg>
+        </div>
+    </div>
+
+    <!-- APLICACIÓN PRINCIPAL -->
+    <div id="app-container">
+        
+        <div class="fondo-romantico"></div>
+
+        <div id="screen-welcome" class="screen active">
+            <h1>Feliz<br>Cumple!</h1>
+            <h2>Mi Vida hermosa</h2>
+            <p>He preparado algo muy especial para celebrarte el fin de semana porque un solo día no es suficiente, pero las mejores cosas hay que ganárselas...</p>
+            <button onclick="goToScreen('screen-game1')">Comenzar ➔</button>
+        </div>
+
+        <div id="screen-game1" class="screen">
+            <h2>Reto 1</h2>
+            <p class="instruccion">Encuentra los pares de nuestras fotos comiendo para descubrir tu primer regalo.</p>
+            
+            <div class="memory-grid" id="memory-grid"></div>
+
+            <button id="btn-next-1" class="hidden" onclick="goToScreen('screen-prize1')">Ver Sorpresa 🎁</button>
+        </div>
+
+        <div id="screen-prize1" class="screen">
+            <h2>¡Desbloqueado!</h2>
+            <div class="prize-card">
+                <div class="prize-icon">🥞🥂</div>
+                <h3>Brunch en un lugar hermoso</h3>
+                <p>Prepárate para comer delicioso y empezar el sábado en el mejor lugar de Bogotá.</p>
+            </div>
+            <button onclick="goToScreen('screen-game2')">Siguiente Reto ➔</button>
+        </div>
+
+        <div id="screen-game2" class="screen">
+            <h2>Reto 2</h2>
+            <p class="instruccion">Toca las letras en orden para formar la palabra oculta que define tu próxima sorpresa.</p>
+            <p style="font-weight: bold; color: var(--rojo-retro); letter-spacing: 5px;" id="word-progress">_ _ _ _ _ _ _</p>
+            
+            <div class="word-grid" id="word-grid"></div>
+
+            <button id="btn-next-2" class="hidden" onclick="goToScreen('screen-prize2')">Ver Sorpresa 🎁</button>
+        </div>
+
+        <div id="screen-prize2" class="screen">
+            <h2>¡Desbloqueado!</h2>
+            <div class="prize-card">
+                <div class="prize-icon">🛍️✨</div>
+                <h3>Bono de $200.000</h3>
+                <p>Porque hoy se trata de ti. Te llevare a comprarte exactamente eso que tienes en mente mi vida.</p>
+            </div>
+            <button onclick="goToScreen('screen-game3')">Último Reto ➔</button>
+        </div>
+
+        <div id="screen-game3" class="screen">
+            <h2>Reto 3</h2>
+            <p class="instruccion">La prueba de fuego. Demuestra que tenemos conexión telepática gamer.</p>
+            
+            <div class="prize-card" style="padding: 20px; box-shadow: 6px 6px 0 rgba(250, 74, 74, 0.2);">
+                <h3 style="font-family: 'DM Sans', sans-serif;">¿Cuál es tu juego favorito en el PS5?</h3>
+            </div>
+
+            <div class="trivia-options">
+                <button class="trivia-btn" onclick="checkTrivia(this, false)">A) Crash Nitro Kart</button>
+                <button class="trivia-btn" onclick="checkTrivia(this, false)">B) EA Sports FC 25</button>
+                <button class="trivia-btn" onclick="checkTrivia(this, true)">C) Overcooking</button>
+                <button class="trivia-btn" onclick="checkTrivia(this, false)">D) Astro Bot</button>
+            </div>
+
+            <button id="btn-next-3" class="hidden" style="margin-top: 20px;" onclick="goToScreen('screen-prize3')">Ver Sorpresa Final 🎁</button>
+        </div>
+
+        <div id="screen-prize3" class="screen">
+            <h2>¡Desbloqueado!</h2>
+            <div class="prize-card">
+                <div class="prize-icon">🎮🍕</div>
+                <h3>Tarde de Juegos + Domicilio</h3>
+                <p>Hoy no se cocina. Pides lo que quieras de comer y yo me encargo de armar la mejor noche de PS5 en casa.</p>
+            </div>
+            <button onclick="goToScreen('screen-final')">Finalizar ➔</button>
+        </div>
+
+        <div id="screen-final" class="screen">
+            <canvas id="confetti"></canvas>
+            <h1>¡Reto<br>Completado!</h1>
+            <p style="font-size: 1.2rem; margin-top: 20px;">Espero que disfrutes mucho tus regalos. Quisiera darte mucho más pero estoy trabajando duro para darte la vida de princesa que mereces, tu cumpleaños siempre sera 
+                muy importante para mi y me tome el tiempo de darte este regalo, mas alla de los presentes, es el tiempo y dedicacion que tomo para hacerte algo, Una carta inmortalizada en una app con mucho amor y tiempo en ella. 
+                Celebremos juntos tu vida que es una bendición de Dios y un regalito que atesorare hasta el dia de mi muerte...</p>
+            <h2> De: Mati / Para: El sueño hecho realidad ¡Te amo! ❤️</h2>
+        </div>
+
+    </div>
+
+<script>
+    // ==========================================
+    // 1. LÓGICA DE EXPLOSIÓN DEL CORAZÓN
+    // ==========================================
+    const heartBtn = document.getElementById('heart-btn');
+    const heartFill = document.getElementById('heart-fill');
+    const introScreen = document.getElementById('intro-screen');
+    const appContainer = document.getElementById('app-container');
+
+    let fillAmount = 0; 
+    let holdInterval;
+    let isHolding = false;
+    let isUnlocked = false;
+
+    function updateFill() {
+        heartFill.setAttribute('y', 24 - fillAmount);
+    }
+
+    function startHold(e) {
+        if (isUnlocked) return;
+        if (e.cancelable) e.preventDefault(); 
+        isHolding = true;
+        clearInterval(holdInterval);
+
+        holdInterval = setInterval(() => {
+            if (fillAmount < 24) {
+                fillAmount += 0.32; 
+                updateFill();
+            } else {
+                unlockScreenWithBurst();
+            }
+        }, 16);
+    }
+
+    function stopHold() {
+        if (isUnlocked) return;
+        isHolding = false;
+        clearInterval(holdInterval);
+
+        holdInterval = setInterval(() => {
+            if (fillAmount > 0) {
+                fillAmount -= 0.7; 
+                if (fillAmount < 0) fillAmount = 0;
+                updateFill();
+            } else {
+                clearInterval(holdInterval);
+            }
+        }, 16);
+    }
+
+    function unlockScreenWithBurst() {
+        isUnlocked = true;
+        clearInterval(holdInterval);
+        
+        // Animación de estallido expansivo
+        heartBtn.classList.add('burst');
+        introScreen.classList.add('fade-out');
+        appContainer.classList.add('app-appear');
+        
+        setTimeout(() => {
+            introScreen.style.display = 'none';
+        }, 800);
+    }
+
+    heartBtn.addEventListener('mousedown', startHold);
+    window.addEventListener('mouseup', stopHold);
+    heartBtn.addEventListener('mouseleave', stopHold);
+    heartBtn.addEventListener('touchstart', startHold, { passive: false });
+    window.addEventListener('touchend', stopHold);
+    window.addEventListener('touchcancel', stopHold);
+
+    // ==========================================
+    // 2. NAVEGACIÓN Y TRANSICIÓN DINÁMICA 3D
+    // ==========================================
+
+    function goToScreen(screenId) {
+        const currentScreen = document.querySelector('.screen.active');
+        const nextScreen = document.getElementById(screenId);
+        
+        if (currentScreen === nextScreen) return;
+
+        if (currentScreen) {
+            currentScreen.classList.remove('active');
+            currentScreen.classList.add('exit-left');
+            
+            setTimeout(() => {
+                currentScreen.classList.remove('exit-left');
+            }, 600);
+        }
+
+        nextScreen.classList.add('enter-right');
+        
+        setTimeout(() => {
+            nextScreen.classList.remove('enter-right');
+            nextScreen.classList.add('active');
+            
+            if(screenId === 'screen-final') {
+                startConfetti();
+            }
+        }, 50);
+    }
+
+    /* JUEGO 1: MEMORIA */
+    const fotos = [
+        'IMG_6912.JPG',
+        'IMG_1234.jpg',
+        '20220823_221722.jpg'
+    ];
+
+    let cardsArray = [...fotos, ...fotos];
+    cardsArray.sort(() => 0.5 - Math.random());
+
+    const memoryGrid = document.getElementById('memory-grid');
+    let flippedCards = [];
+    let matchedPairs = 0;
+
+    cardsArray.forEach((foto) => {
+        const card = document.createElement('div');
+        card.classList.add('memory-card');
+        card.dataset.image = foto;
+        card.innerHTML = `
+            <div class="memory-card-inner">
+                <div class="memory-card-front">❓</div>
+                <div class="memory-card-back"><img src="${foto}" alt="recuerdo"></div>
+            </div>
+        `;
+        card.addEventListener('click', flipCard);
+        memoryGrid.appendChild(card);
+    });
+
+    function flipCard() {
+        if (flippedCards.length < 2 && !this.classList.contains('flipped')) {
+            this.classList.add('flipped');
+            flippedCards.push(this);
+
+            if (flippedCards.length === 2) {
+                setTimeout(checkMatch, 700);
+            }
+        }
+    }
+
+    function checkMatch() {
+        const [card1, card2] = flippedCards;
+        if (card1.dataset.image === card2.dataset.image) {
+            matchedPairs++;
+            if (matchedPairs === 3) {
+                const btn1 = document.getElementById('btn-next-1');
+                btn1.classList.remove('hidden');
+                btn1.classList.add('show-unlock');
+            }
+        } else {
+            card1.classList.remove('flipped');
+            card2.classList.remove('flipped');
+        }
+        flippedCards = [];
+    }
+
+    /* JUEGO 2: SOPA DE LETRAS DIAGONAL */
+    const wordGrid = document.getElementById('word-grid');
+    const wordToFind = "COMPRAS";
+    let currentLetterIndex = 0;
+    
+    const targetIndices = [0, 8, 16, 24, 32, 40, 48];
+    const gridSize = 49; 
+    const poolLetras = "CCOMPPRRAASOOCCOMPRAASABCDEFGHJKLMNÑQRSTVWXYZ";
+
+    for (let i = 0; i < gridSize; i++) {
+        let targetIndex = targetIndices.indexOf(i);
+        let letter = "";
+        let isTarget = false;
+
+        if (targetIndex !== -1) {
+            letter = wordToFind.charAt(targetIndex);
+            isTarget = true;
+        } else {
+            letter = poolLetras.charAt(Math.floor(Math.random() * poolLetras.length));
+        }
+
+        const btn = document.createElement('button');
+        btn.classList.add('letter-btn');
+        btn.innerText = letter;
+        
+        btn.addEventListener('click', function() {
+            if (this.classList.contains('selected')) return;
+
+            if (isTarget && targetIndex === currentLetterIndex) {
+                this.classList.add('selected');
+                currentLetterIndex++;
+                
+                let progressText = wordToFind.substring(0, currentLetterIndex) + "_ ".repeat(wordToFind.length - currentLetterIndex);
+                document.getElementById('word-progress').innerText = progressText.split("").join(" ");
+
+                if (currentLetterIndex === wordToFind.length) {
+                    const btn2 = document.getElementById('btn-next-2');
+                    btn2.classList.remove('hidden');
+                    btn2.classList.add('show-unlock');
+                }
+            } else {
+                this.style.backgroundColor = "#ffcccc";
+                setTimeout(() => this.style.backgroundColor = "var(--blanco)", 300);
+            }
+        });
+        wordGrid.appendChild(btn);
+    }
+
+    /* JUEGO 3: TRIVIA */
+    function checkTrivia(btn, isCorrect) {
+        const buttons = document.querySelectorAll('.trivia-btn');
+        buttons.forEach(b => b.style.pointerEvents = 'none');
+
+        if (isCorrect) {
+            btn.classList.add('correct');
+            const btn3 = document.getElementById('btn-next-3');
+            btn3.classList.remove('hidden');
+            btn3.classList.add('show-unlock');
+        } else {
+            btn.classList.add('wrong');
+            setTimeout(() => {
+                btn.classList.remove('wrong');
+                buttons.forEach(b => b.style.pointerEvents = 'auto');
+            }, 600);
+        }
+    }
+
+    /* EFECTO DE CONFETI */
+    function startConfetti() {
+        const canvas = document.getElementById('confetti');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const pieces = [];
+        const colors = ['#fa4a4a', '#2b2b2b', '#ffffff', '#ffd1d1'];
+
+        for (let i = 0; i < 120; i++) {
+            pieces.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height - canvas.height,
+                w: Math.random() * 10 + 5,
+                h: Math.random() * 10 + 5,
+                c: colors[Math.floor(Math.random() * colors.length)],
+                dy: Math.random() * 3 + 2,
+                r: Math.random() * 360,
+                dr: Math.random() * 10 - 5
+            });
+        }
+
+        function render() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            pieces.forEach(p => {
+                ctx.save();
+                ctx.translate(p.x + p.w / 2, p.y + p.h / 2);
+                ctx.rotate(p.r * Math.PI / 180);
+                ctx.fillStyle = p.c;
+                ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+                ctx.restore();
+
+                p.y += p.dy;
+                p.r += p.dr;
+
+                if (p.y > canvas.height) p.y = -20;
+            });
+            requestAnimationFrame(render);
+        }
+        render();
+    }
+</script>
+
+</body>
+</html>
